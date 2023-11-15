@@ -1,211 +1,36 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
+
 <head>
-	<title>Univesp - Projeto Integrador 2</title>
-	<meta name="description" content="" />
-	<meta name="keywords" content="" />
-	<meta name="robots" content="noindex, nofollow" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE" />
-	<meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE" />
-	<meta HTTP-EQUIV="EXPIRES" CONTENT="Mon, 22 Jul 2002 11:12:01 GMT" />
-	<meta name="SKYPE_TOOLBAR" content="SKYPE_TOOLBAR_PARSER_COMPATIBLE" />
-	<link rel="shortcut icon" href="#">
-
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projeto Integrador 1</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-	<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+    <link href="css/estilo.css" rel="stylesheet">
 </head>
-
 <body>
-	<header id="topoPagina">
-		<div w3-include-html="menu.html"></div>
-	</header>
+    <div w3-include-html="menu.html"></div>
 
-	<section>
-		<div class="container-fluid">
-    	    <div class="row">
-        	    <div class="col col-12">
-            	    <h1 class="text-center">ÍNDICES</h1>
-                	<table class="table table-striped table-hover" id="tb_ipca">
-                    	<thead class="table-dark">
-                        	<tr>
-	                          <th scope="col">Data</th>
-    	                      <th scope="col">Selic</th>
-							  <th scope="col">IPCA</th>
-        	                </tr>
-            	          </thead>
-                	      <tbody>
-                    	  </tbody>
-	                </table>
-    	        </div>
-        	</div>
-    	</div>
-	</section>
-
-	<section>
-		<div class="container-fluid">
-			<div class="jumbotron jumbotron-fluid bg-teal-light">
-				<div class="container mt-4">
-					<div class="row bg-light p-3 border rounded">
-						<div class="col-12 col-lg-12">
-							<h2 class="text-center">Análise Financeira - Índice x Período</h2>
-							<canvas id="grafico"></canvas>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-			<script src="https://cdn.jsdelivr.net/gh/emn178/chartjs-plugin-labels/src/chartjs-plugin-labels.js"></script>
-		</div>
-	</section>
-
-	
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col col-12 text-center">
+                <img class="mt-4 mb-4" style="height: 150px;" src="img/univesp.png" alt="Logotipo Univesp">
+            </div>
+        </div>
+        <div class="row menu-principal">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3"><a href="listar_recursos.html" class="btn btn-outline-success btn-lg col-12" title="Listar Produtos"><span class="material-icons item-menu">attach_money</span>Listar Recursos</a></div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3"><a href="adicionar_recurso.html" class="btn btn-outline-success btn-lg col-12" title="Cadastrar Produto"><span class="material-icons item-menu">add_circle_outline</span>Adicionar Recurso</a></div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3"><a href="listar_financiamento.html" class="btn btn-outline-primary btn-lg col-12" title="Listar Financiamento"><span class="material-icons item-menu">account_balance</span>Listar Financiamento</a></div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3"><a href="adicionar_financiamento.html" class="btn btn-outline-primary btn-lg col-12" title="Adicionar Financiamento"><span class="material-icons item-menu">add_circle_outline</span>Adicionar Financiamento</a></div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3"><a href="analise_financeira.html" class="btn btn-outline-danger btn-lg col-12" title="Inventário"><span class="material-icons item-menu">equalizer</span>Análise Financeira</a></div>
+        </div>
+    </div>
 </body>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
 <script src="http://www.w3schools.com/lib/w3data.js"></script>
 <script>w3IncludeHTML();</script>
-
-<script>
-	const obj_itens = {};
-	let labels = []; let populacao = []; let selic = []; let ipca = [];
-	let data_chart = {labels, selic, ipca};
-
-	function calcularIpca(){
-		$.ajax({
-            url: "https://api.bcb.gov.br/dados/serie/bcdata.sgs.10844/dados?formato=json&dataInicial=01/01/2019&dataFinal=08/11/2023",
-            dataType: "JSON"
-        }).then(function(data) {
-			$.each(data, function(i, item){
-				temp_id = item["data"].substr(6,10) + item["data"].substr(3,2);
-				obj_itens[temp_id] = {"data":item["data"].substr(3,10), "ipca" : item["valor"]};
-            });
-		});
-	}
-	
-	function calcularSelic(){
-		$.ajax({
-            url: "https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados?formato=json&dataInicial=01/01/2019&dataFinal=08/11/2023",
-            dataType: "JSON"
-        }).then(function(data) {
-			let result = [];
-			let temp_valor = 0;
-
-			$.each(data, function(i, item){
-				temp_id = item["data"].substr(6,10) + item["data"].substr(3,2);
-
-				if (result[temp_id]) {
-					temp_valor = parseFloat(result[temp_id]) + parseFloat(item.valor);
-					temp_valor = temp_valor.toFixed(6);
-					result[temp_id] = temp_valor;
-				} else {
-					temp_valor = parseFloat(item.valor);
-					temp_valor = temp_valor.toFixed(6);
-					result[temp_id] = temp_valor;
-				}
-			});
-
-			for (let id in result) {
-				let chave = id;
-				if(obj_itens[chave] != null){
-					obj_itens[chave]["selic"] = result[id];
-				}
-			}
-
-		});
-	}
-	
-	function calcularIndices(){
-		let i = 0;
-		for(let id in obj_itens){
-			let linha = "<tr><td>" + obj_itens[id]["data"] +
-                "</td><td>" + obj_itens[id]["selic"] +
-				"</td><td>" + obj_itens[id]["ipca"] +
-                "</td></tr>";
-               	$("#tb_ipca tbody").append(linha);
-			data_chart.labels[i] = obj_itens[id]["data"];
-			data_chart.selic[i] = obj_itens[id]["selic"];
-			data_chart.ipca[i] = obj_itens[id]["ipca"];
-			i++;
-		}
-
-		showGraph('grafico', data_chart, "line");
-		console.log(data_chart);
-	}
-
-	function showGraph(c, data, t="bar")
-	{
-		let chartdata = {
-			labels: data.labels,
-			datasets: [
-				{
-					label: "Selic",
-					backgroundColor: "#088",
-					borderColor: "#088",
-					data: data.selic
-				},
-				{
-					label: "IPCA",
-					backgroundColor: "#28a745",
-					borderColor: "#28a745",
-					data: data.ipca
-				}
-			]
-		};
-		let graphTarget = $("#"+c);
-		let barGraph = new Chart(graphTarget, {
-			type: t,
-			data: chartdata,
-			options: {
-				plugins: {
-					legend: {
-						display: true
-					},
-					tooltip: {
-						callbacks: {
-							label: function(tooltipItem) {
-								var label = tooltipItem.dataset.label || '';
-								if (label) {
-									label += ': ';
-								}
-								if (tooltipItem.parsed.x !== null) {
-									var valor = tooltipItem.dataset.data[tooltipItem.parsed.x];
-									label += valor.toString().replace('.', ',') + '%';
-								}
-								return label;
-
-								/*
-								var value = data.datasets[tooltipItem.datasetIndex].data[0];
-								var label = data.datasets[tooltipItem.datasetIndex].label;
-								return label + ' ' + value + '%';
-								*/
-							}
-						}
-					}
-				},
-				indexAxis: 'x'
-			}
-		});
-	}
-
-    $(document).ready(function() {
-		calcularIpca();
-		calcularSelic();
-
-		const count = Object.keys(obj_itens).length;
-		console.log("tamanho: " + count);
-
-		setTimeout(function() {
-			calcularIndices();
-		}, (3 * 1000));
-
-		//console.log(obj_itens);
-    });
-</script>
-
 </html>
