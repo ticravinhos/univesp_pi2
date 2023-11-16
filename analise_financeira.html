@@ -45,6 +45,7 @@
 		}
 		.selic {color: #088;}
 		.ipca {color: #28a745;}
+		.conclusao {line-height: 1.5em; text-align: justify; padding: 20px;}
 	</style>
 </head>
 
@@ -92,6 +93,23 @@
 				<div class="container mt-4">
 					<div class="row bg-light p-3 border rounded">
 						<div class="col-12 col-lg-12">
+							<h2 class="text-center">Financiamento Estudantil</h2>
+							<div class="col-12 col-lg-12 text-center mb-4">
+								<div class="col-12 col-lg-3 pt-3 pb-2 txtbox-0">
+									<p class="text-danger txtbox-2">Valor Total Financiado</p>
+									<p class="text-danger txtbox-1" id="txt-total-financiado">&nbsp;</p>
+								</div>
+								<div class="col-12 col-lg-3 pt-3 pb-2 txtbox-0">
+									<p class="text-danger txtbox-2">Parcelas</p>
+									<p class="text-danger txtbox-1" id="txt-parcelas">&nbsp;</p>
+								</div>
+								<div class="col-12 col-lg-3 pt-3 pb-2 txtbox-0">
+									<p class="text-danger txtbox-2">Valor da Parcela</p>
+									<p class="text-danger txtbox-1" id="txt-valor-parcela">&nbsp;</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-12 col-lg-12">
 							<h2 class="text-center">Projeção de Rendimentos</h2>
 							<div class="col-12 col-lg-12 text-center mb-4">
 								<div class="col-12 col-lg-3 pt-3 pb-2 txtbox-0">
@@ -105,6 +123,14 @@
 								<div class="col-12 col-lg-3 pt-3 pb-2 txtbox-0">
 									<p class="ipca txtbox-2">Rendimentos IPCA</p>
 									<p class="ipca txtbox-1" id="txt-ipca">&nbsp;</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-12 col-lg-12">
+							<h2 class="text-center">Análise Financeira</h2>
+							<div class="col-12 col-lg-12 text-center mb-4">
+								<div class="col-12 col-lg-9 pt-3 pb-2 txtbox-0">
+									<p class="txtbox-2 conclusao">Com base nos dados informados e no histórico dos índices financeiros obtidos do Banco Central do Brasil e IBGE, <span id="conclusao"></span></p>
 								</div>
 							</div>
 						</div>
@@ -124,51 +150,139 @@
 	const obj_itens = {};
 	let labels = []; let populacao = []; let selic = []; let ipca = [];
 	let data_chart = {labels, selic, ipca};
+	let inicio = "01/01/2019";
+	let valor_total_financiado = 0;
 
-	function calcularIpca(){
-		$.ajax({
-            url: "https://api.bcb.gov.br/dados/serie/bcdata.sgs.10844/dados?formato=json&dataInicial=01/01/2019&dataFinal=08/11/2023",
-            dataType: "JSON"
-        }).then(function(data) {
-			$.each(data, function(i, item){
-				temp_id = item["data"].substr(6,10) + item["data"].substr(3,2);
-				obj_itens[temp_id] = {"data":item["data"].substr(3,10), "ipca" : item["valor"]};
-            });
+    $(document).ready(function() {
+		$.when(
+			consultaApi("listar_financiamento.php") /* Dados de financiamento do Banco */
+		).then(function(objFinanciamento) {
+			let arrFinanciamento = JSON.parse(objFinanciamento);
+			inicio = arrFinanciamento[0].parcelas;
+			inicio = inicioSerie(inicio);
+			$("#txt-parcelas").text(arrFinanciamento[0].parcelas);
+			valor_total_financiado = parseFloat(arrFinanciamento[0].valor);
+			$("#txt-total-financiado").text(formataMoeda(arrFinanciamento[0].valor));
+			let valor_parcela = parseFloat(arrFinanciamento[0].valor) / parseInt(arrFinanciamento[0].parcelas);
+			valor_parcela = parseFloat(valor_parcela).toFixed(2);
+			$("#txt-valor-parcela").text(formataMoeda(valor_parcela));
+
+
+			$.when(
+				consultaApi("https://api.bcb.gov.br/dados/serie/bcdata.sgs.10844/dados?formato=json&dataInicial=" +inicio+ "&dataFinal=16/11/2023"), /* IPCA */
+				consultaApi("https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados?formato=json&dataInicial=" +inicio+ "&dataFinal=16/11/2023"), /* Selic */
+				consultaApi("listar_recursos.php") /* Dados de recursos do Banco */
+			).then(function(objIpca, objSelic, objRecursos) {
+				processarIpca(objIpca);
+				processarSelic(objSelic);
+				processarRecursos(objRecursos);
+				calcularIndices(parseFloat(economia_mensal));
+ 			}, function(){
+    			console.log('Houve um erro de resposta do financiamento (Banco de Dados)!');
+ 			});
+ 		}, function(){
+    		console.log('Houve um erro de resposta da API!');
+ 		});	
+    });
+
+
+	// --------------------------- FUNÇÕES ---------------------------
+
+	function consultaApi(url) {
+		return $.ajax({
+			url: url,
+			method: "get",
+			dataType: "JSON"
 		});
 	}
-	
-	function calcularSelic(){
-		$.ajax({
-            url: "https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados?formato=json&dataInicial=01/01/2019&dataFinal=08/11/2023",
-            dataType: "JSON"
-        }).then(function(data) {
-			let result = [];
-			let temp_valor = 0;
 
-			$.each(data, function(i, item){
-				temp_id = item["data"].substr(6,10) + item["data"].substr(3,2);
+	function formataMoeda(valor) {
+		let moeda = parseFloat(valor);
+		moeda = moeda.toLocaleString("pt-BR", { style: "currency" , currency:"BRL"});
+		return moeda;
+	}
 
-				if (result[temp_id]) {
-					temp_valor = parseFloat(result[temp_id]) + parseFloat(item.valor);
-					temp_valor = temp_valor.toFixed(6);
-					result[temp_id] = temp_valor;
-				} else {
-					temp_valor = parseFloat(item.valor);
-					temp_valor = temp_valor.toFixed(6);
-					result[temp_id] = temp_valor;
-				}
-			});
+	function inicioSerie(parcelas) {
+		let y = 2023;
+		let m = 11;
+		let n = parseInt(parcelas);
+		for(i=n; i>0; i--){
+			if(m>1){m--;}
+			else{m=12; y--;}
+		}
+		return "01/" + (m).toString().padStart(2, "0") + "/" + y;
+	}
 
-			for (let id in result) {
-				let chave = id;
-				if(obj_itens[chave] != null){
-					obj_itens[chave]["selic"] = result[id];
-				}
+	function getUrlParameter(sParam) {
+		var sPageURL = window.location.search.substring(1),
+			sURLVariables = sPageURL.split('&'),
+			sParameterName,
+			i;
+		for (i = 0; i < sURLVariables.length; i++) {
+			sParameterName = sURLVariables[i].split('=');
+			if (sParameterName[0] === sParam) {
+				return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
 			}
+		}
+		return false;
+	};
 
+	function processarIpca(data) {
+		$.each(data[0], function(i, item){
+			temp_id = item["data"].substr(6,10) + item["data"].substr(3,2);
+			obj_itens[temp_id] = {"data":item["data"].substr(3,10), "ipca" : item["valor"]};
 		});
 	}
-	
+
+	function processarSelic(data) {
+		let result = [];
+		let temp_valor = 0;
+
+		$.each(data[0], function(i, item){
+			temp_id = item["data"].substr(6,10) + item["data"].substr(3,2);
+
+			if (result[temp_id]) {
+				temp_valor = parseFloat(result[temp_id]) + parseFloat(item.valor);
+				temp_valor = temp_valor.toFixed(6);
+				result[temp_id] = temp_valor;
+			} else {
+				temp_valor = parseFloat(item.valor);
+				temp_valor = temp_valor.toFixed(6);
+				result[temp_id] = temp_valor;
+			}
+		});
+
+		for (let id in result) {
+			let chave = id;
+			if(obj_itens[chave] != null){
+				obj_itens[chave]["selic"] = result[id];
+			}
+		}
+	}
+
+	function processarRecursos(data) {
+		str_data = JSON.parse(data[0]);
+		let total = 0.00;
+		$.each(str_data, function(i, item){
+			if(str_data[i].tipo == "DESPESA"){
+				total = parseFloat(total) - parseFloat(str_data[i].valor);
+				total = total.toFixed(2);
+			}else{
+				total = parseFloat(total) + parseFloat(str_data[i].valor);
+				total = total.toFixed(2);
+			}
+		});
+		economia_mensal = total;
+		$("#txt-economia-mensal").text(formataMoeda(economia_mensal));
+	}
+
+	function processarFinanciamento(data) {
+		str_data = JSON.parse(data[0]);
+		str_data = str_data[0];
+		str_data["inicio"] = inicioSerie(str_data.parcelas);
+		return str_data;
+	}
+
 	function calcularIndices(incremento=0){
 		let i = 0;
 		let acumulado_selic = 0;
@@ -176,12 +290,6 @@
 		let selic_mensal = 0;
 		let ipca_mensal = 0;
 		for(let id in obj_itens){
-/*			let linha = "<tr><td>" + obj_itens[id]["data"] +
-                "</td><td>" + obj_itens[id]["selic"] +
-				"</td><td>" + obj_itens[id]["ipca"] +
-                "</td></tr>";
-               	$("#tb_ipca tbody").append(linha);
-*/
 			selic_mensal = parseFloat(obj_itens[id]["selic"]);
 			selic_mensal = parseFloat(selic_mensal * acumulado_selic / 100);
 			acumulado_selic = parseFloat(acumulado_selic) + parseFloat(incremento + selic_mensal);
@@ -198,15 +306,23 @@
 			i++;
 		}
 
+		if(acumulado_ipca > valor_total_financiado && acumulado_selic > valor_total_financiado){
+			$("#conclusao").html("investimentos financeiros corrigidos pelo IPCA e pela Selic são adequados para auxiliar na quitação do financiamento estudantil.");
+		}else if(acumulado_ipca > valor_total_financiado){
+			$("#conclusao").html("investimentos financeiros corrigidos pelo IPCA são adequados para auxiliar na quitação do financiamento estudantil, mas investimentos corrigidos pela Selic não são recomendados neste cenário.");
+		}else if(acumulado_selic > valor_total_financiado){
+			$("#conclusao").html("investimentos financeiros corrigidos pela Selic são adequados para auxiliar na quitação do financiamento estudantil, mas investimentos corrigidos pelo IPCA não são recomendados neste cenário.");
+		}else{
+			$("#conclusao").html("investimentos financeiros corrigidos pelo IPCA e pela Selic não são adequados para auxiliar na quitação do financiamento estudantil. É recomendado reavaliar/renegociar os valores das parcelas e balancear receitas e despesas em seu orçamento.");
+		}
+
 		$("#txt-selic").text(formataMoeda(acumulado_selic));
 		$("#txt-ipca").text(formataMoeda(acumulado_ipca));
 
 		showGraph('grafico', data_chart, "line");
-		//console.log(data_chart);
 	}
 
-	function showGraph(c, data, t="bar")
-	{
+	function showGraph(c, data, t="bar"){
 		let chartdata = {
 			labels: data.labels,
 			datasets: [
@@ -260,81 +376,7 @@
 		});
 	}
 
-	function getUrlParameter(sParam) {
-        var sPageURL = window.location.search.substring(1),
-            sURLVariables = sPageURL.split('&'),
-            sParameterName,
-            i;
-        for (i = 0; i < sURLVariables.length; i++) {
-           sParameterName = sURLVariables[i].split('=');
 
-            if (sParameterName[0] === sParam) {
-                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
-            }   
-        }
-        return false;
-    };
-
-	function formataMoeda(valor) {
-		let moeda = parseFloat(valor);
-		moeda = moeda.toLocaleString("pt-BR", { style: "currency" , currency:"BRL"});
-		return moeda;
-	}
-
-	function listarFinanciamento() {
-		// Carregar dados de financiamento
-		$.ajax({
-			/* URL para listar financiamento */
-			url: "listar_financiamento.php",
-			dataType: "JSON"
-		}).then(function(data) {
-			str_data = JSON.parse(data);
-			let parcelas = 0;
-			let financiamento = 0;
-			$.each(str_data, function(i, item){
-				parcelas = parseInt(str_data[i].parcelas);
-				financiamento = parseFloat(str_data[i].valor);
-			});
-		});
-		return {parcelas, financiamento};
-	}
-
-	function listarRecursos() {
-		// Carregar dados de recursos (receitas/despesas)
-		$.ajax({
-			/* URL para listar recursos */
-			url: "listar_recursos.php",
-			dataType: "JSON"
-		}).then(function(data) {
-			str_data = JSON.parse(data);
-			let total = 0.00;
-			$.each(str_data, function(i, item){
-				if(str_data[i].tipo == "DESPESA"){
-					total = parseFloat(total) - parseFloat(str_data[i].valor);
-					total = total.toFixed(2);
-				}else{
-					total = parseFloat(total) + parseFloat(str_data[i].valor);
-					total = total.toFixed(2);
-				}
-			});
-			economia_mensal = total;
-			console.log(economia_mensal);
-		});
-	}
-
-    $(document).ready(function() {
-		listarRecursos();
-		calcularIpca();
-		calcularSelic();
-			
-		const count = Object.keys(obj_itens).length;
-		console.log("tamanho: " + count);
-			
-		setTimeout(function() {
-			$("#txt-economia-mensal").text(formataMoeda(economia_mensal))
-			calcularIndices(parseFloat(economia_mensal));
-		}, (3 * 1000));
-    });
 </script>
 
 </html>

@@ -3,8 +3,8 @@ $data = '[
     {
         "id": 1,
         "descricao": "FIES",
-        "parcelas": "48",
-        "valor": "399.85"
+        "parcelas": "96",
+        "valor": "52805.66"
     }
 ]';
 $myJSON = json_encode($data);
