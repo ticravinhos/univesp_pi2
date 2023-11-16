@@ -39,7 +39,7 @@ $data = '[
         "id": 6,
         "descricao": "Celular",
         "tipo": "DESPESA",
-        "categoria": "Telecomunicacao",
+        "categoria": "Telefonia",
         "valor": "99.00"
     },
     {
